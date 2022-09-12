@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -24,13 +25,35 @@ class User extends Authenticatable
     ];
 
     /**
+     * set default attribute
+     *
+     */
+    protected $attributes = ['type' => 'rando'];
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
+    // To hide attributes
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    /**
+     * Blacklist
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [
+        // 'password'
+    ];
+
+    /**
+     * To append attributes in model
+     */
+    protected $appends = [
+        'whatever'
     ];
 
     /**
@@ -38,7 +61,26 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
+    // conversion between table & logic
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /*
+    * check ClassroomType.php
+    * getWhateverAttribute is naming convention
+    */
+    public function getWhateverAttribute()
+    {
+    }
+
+    // setting secret into hash
+    public function SetPasswordAttribute()
+    {
+        return Hash::make($this->secret);
+    }
 }
+
+// fillable
+// guarded
+// guard_name

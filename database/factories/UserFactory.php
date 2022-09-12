@@ -12,6 +12,7 @@ class UserFactory extends Factory
      *
      * @return array
      */
+    // definition 
     public function definition()
     {
         return [
