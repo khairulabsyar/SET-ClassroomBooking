@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherFactoryController;
+use App\Http\Controllers\TeacherResourceController;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -33,75 +36,70 @@ Route::post('classroom-type', function () {
     return ClassroomType::all();
 });
 
-/**
- * Return list of teachers
- */
-Route::get('teacher-list', function () {
-    $data = Teacher::all();
-    return response()->json($data);
-});
+// Route::get('teacher-list', function () {
+//     $data = Teacher::all();
+//     return response()->json($data);
+// });
+// Route::get('teacher-list', [TeacherController::class, 'index']);
+//or old systax with configured RouteServiceProvider.php
+// Route::get('teacher-list', 'App\Http\Controllers\TeacherController@index');
 
-/**
- * Add  new teacher
- * store()
- */
-Route::post('teacher-list', function (Request $request) {
+// Route::post('teacher-list', function (Request $request) {
+//     //either do it here or in Teacher.php Mutator function
+//     // $request['password'] = Hash::make($request->secret);
+//     Teacher::create($request->all());
+//     $data = Teacher::get();
+//     return  response()->json($data);
+// });
+// Route::post('teacher-list', [TeacherController::class, 'store']);
 
-    //either do it here or in Teacher.php Mutator function
-    // $request['password'] = Hash::make($request->secret);
+// Route::get('teacher/{id}', function ($id) {
+//     return Teacher::findOrFail($id);
+// });
+// Route::get('teacher/{id}', [TeacherController::class, 'show']);
 
-    Teacher::create($request->all());
-    $data = Teacher::get();
-    return  response()->json($data);
-});
+// Route::put('teacher/{id}', function ($id, Request $request) {
+//     // select the specific teacher based on id
+//     $teacher = Teacher::findOrFail($id);
+//     // update the info given in payload to that teacher
+//     $teacher->update($request->all());
+//     // return updated information
+//     return $teacher;
+//     // // basically after sending to DB it will return back to here, extra query
+//     // return $teacher->refresh();
+//     // // shorter version for refresh
+//     // return tap($teacher)->update($request->all());
+// });
+// Route::put('teacher/{id}', [TeacherController::class, 'update']);
 
-/**
- * Get the specific teacher
- * show()
- */
-Route::get('teacher/{id}', function ($id) {
-    return Teacher::findOrFail($id);
-});
+// Route::delete('teacher/{id}', function ($id) {
+//     Teacher::findOrFail($id)->delete();
+//     return  response()->json("Delete Teacher: " . $id, 204);
+// });
+// Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
 
-/**
- * Update existing teacher by his/her id
- * update()
- */
-Route::put('teacher/{id}', function ($id, Request $request) {
-    // select the specific teacher based on id
-    $teacher = Teacher::findOrFail($id);
+// can be summarise into this line of code and make sure the name is generalise
+Route::apiResource('teacher', TeacherResourceController::class);
+// Route::get('teacher-list', [TeacherController::class, 'index']);
+// Route::post('teacher-list', [TeacherController::class, 'store']);
+// Route::get('teacher/{id}', [TeacherController::class, 'show']);
+// Route::put('teacher/{id}', [TeacherController::class, 'update']);
+// Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
 
-    // update the info given in payload to that teacher
-    $teacher->update($request->all());
+// exclude some function (blacklist)
+// Route::apiResource('teacher', TeacherResourceController::class)->except(['destroy']);
 
-    // return updated information
-    return $teacher;
+// execute specific function (whitelist)
+// Route::apiResource('teacher', TeacherResourceController::class)->only(['destroy']);
 
-    // // basically after sending to DB it will return back to here, extra query
-    // return $teacher->refresh();
+// for php artisan route:list
+// Route::apiResource('teacher', TeacherResourceController::class)->names('helloWorld');
 
-    // // shorter version for refresh
-    // return tap($teacher)->update($request->all());
-});
-
-/**
- * Delete an existing teacher
- * destroy()
- */
-Route::delete('teacher/{id}', function ($id) {
-    Teacher::findOrFail($id)->delete();
-
-    return  response()->json("Delete Teacher: " . $id, 204);
-});
-
-
-// Factory, create a fake data
-Route::get('factory-teacher', function () {
-    // generate only
-    // $generated = Teacher::factory()->make();
-
-    // generate and save to DB
-    $generated = Teacher::factory()->upTheName()->create();
-
-    return $generated;
-});
+// Route::get('factory-teacher', function () {
+//     // generate only
+//     // $generated = Teacher::factory()->make();
+//     // generate and save to DB
+//     $generated = Teacher::factory()->upTheName()->create();
+//     return $generated;
+// });
+Route::get('factory-teacher', [TeacherFactoryController::class]);

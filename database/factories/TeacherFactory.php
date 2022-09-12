@@ -18,6 +18,7 @@ class TeacherFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'password' => $this->faker->password(),
+            // 'password' => 'password123',
         ];
     }
 
