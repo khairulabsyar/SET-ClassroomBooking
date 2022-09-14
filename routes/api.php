@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherFactoryController;
 use App\Http\Controllers\TeacherResourceController;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +82,7 @@ Route::post('classroom-type', function () {
 // Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
 
 // can be summarise into this line of code and make sure the name is generalise
-Route::apiResource('teacher', TeacherResourceController::class);
+// Route::apiResource('teacher', TeacherResourceController::class); // remove this for 13/9
 // Route::get('teacher-list', [TeacherController::class, 'index']);
 // Route::post('teacher-list', [TeacherController::class, 'store']);
 // Route::get('teacher/{id}', [TeacherController::class, 'show']);
@@ -103,3 +106,45 @@ Route::apiResource('teacher', TeacherResourceController::class);
 //     return $generated;
 // });
 Route::get('factory-teacher', [TeacherFactoryController::class]);
+
+// 13/9
+// Creating auth:sanctum
+Route::apiResource('teacher', TeacherResourceController::class)->middleware('auth:sanctum');
+
+/**
+ * Auth login
+ */
+Route::post('teacher-login', [AuthController::class, 'login']);
+
+Route::post('teacher-logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Route::get('auth', function () {
+// dd(Auth::user(), Auth::user()->name, Auth::id());
+//     return response()->json(['Test' => 'Success']);
+// })->middleware('auth:sanctum');
+
+// After authorization
+Route::get('auth', function () {
+    // dd(Auth::user(), Auth::user()->name, Auth::id());
+    return response()->json(['Test' => 'Success']);
+    // dd("hello");
+})->middleware('auth:sanctum', 'role:Administrator|Support`');
+
+// giving permission
+Route::get('permission-to-role', function () {
+    // seed permission 'teacher:edit', 'teacher;delete'
+    // php artisan permission:create-permission "teacher:delete"
+    // php artisan permission:create-permission "teacher:edit"
+
+    // extract the role
+    $role = Role::findbyName('Administrator');
+
+    // give permission to role
+    $role->givePermissionTo(['teacher:edit', 'teacher:delete']);
+
+    return $role;
+});
+
+Route::get('permission-test', function () {
+    return 'Success';
+})->middleware(['permission:teacher:edit|teacher:delete']);

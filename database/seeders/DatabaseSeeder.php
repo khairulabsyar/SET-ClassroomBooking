@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         // $this->call([CountrySeeder::class]);
 
-        Teacher::factory(50)->upTheName()->create();
+        Teacher::factory(50)->create();
+        // Teacher::factory(50)->upTheName()->create();
     }
 }

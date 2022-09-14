@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Teacher;
 use Illuminate\Http\Request;
-use app;
 use App\Http\Requests\AddTeacherRequest;
 
 class TeacherResourceController extends Controller
@@ -17,6 +16,7 @@ class TeacherResourceController extends Controller
     public function index()
     {
         $data = Teacher::all();
+
         return response()->json($data);
     }
 
@@ -38,9 +38,20 @@ class TeacherResourceController extends Controller
      */
     public function store(AddTeacherRequest $request)
     {
-        Teacher::create($request->all());
-        $data = Teacher::get();
-        return  response()->json($data);
+        // Teacher::create($request->all());
+        // $data = Teacher::get();
+        // return  response()->json($data);
+
+        // after authorization
+
+        $teacher = Teacher::create($request->all());
+
+        // assign role to Admin
+        // $teacher->assignRole('Administrator');
+        $teacher->assignRole('Support');
+        $teacher->assignRole('Developer');
+
+        return response()->json($teacher);
     }
 
     /**
@@ -51,7 +62,14 @@ class TeacherResourceController extends Controller
      */
     public function show($id)
     {
-        return Teacher::findOrFail($id);
+        // return Teacher::findOrFail($id);
+        // for authorization
+        // give authorization to teacher based on id in database
+        $teacher = Teacher::findOrFail($id);
+
+        $this->authorize('view', $teacher);
+
+        return $teacher;
     }
 
     /**
@@ -81,6 +99,9 @@ class TeacherResourceController extends Controller
         ]);
 
         $teacher = Teacher::findOrFail($id);
+
+        // update for authorization
+        $this->authorize('view', $teacher);
 
         // $teacher->update($request->all());
 

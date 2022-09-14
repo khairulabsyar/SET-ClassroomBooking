@@ -29,6 +29,7 @@ class User extends Authenticatable
      *
      */
     protected $attributes = ['type' => 'rando'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -74,7 +75,7 @@ class User extends Authenticatable
     {
     }
 
-    // setting secret into hash
+    // setting password into hash
     public function SetPasswordAttribute()
     {
         return Hash::make($this->secret);

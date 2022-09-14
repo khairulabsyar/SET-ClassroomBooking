@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+
 
 /**
  * Store list of Teachers
  */
-class Teacher extends Model
+class Teacher extends AuthUser
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens, HasRoles;
 
     protected $fillable = [
         'name',
@@ -28,7 +32,7 @@ class Teacher extends Model
     ];
 
     // Mutator function
-    public function SetPasswordAttribute($value)
+    public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
     }

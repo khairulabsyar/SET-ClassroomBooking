@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddTeacherRequest;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use App\Http\Requests\AddTeacherRequest;
 
 class TeacherController extends Controller
 {
@@ -14,7 +14,9 @@ class TeacherController extends Controller
      */
     public function index()
     {
+
         $data = Teacher::all();
+
         return response()->json($data);
     }
 
@@ -25,7 +27,9 @@ class TeacherController extends Controller
     public function store(AddTeacherRequest $request)
     {
         Teacher::create($request->all());
+
         $data = Teacher::get();
+
         return  response()->json($data);
     }
 
@@ -35,7 +39,15 @@ class TeacherController extends Controller
      */
     public function show($id)
     {
-        return Teacher::findOrFail($id);
+        // return Teacher::findOrFail($id);
+
+        //for authorization
+        // give authorization to teacher based on id in database
+        $teacher = Teacher::findOrFail($id);
+
+        $this->authorize('view', $teacher);
+
+        return $teacher;
     }
 
     /**

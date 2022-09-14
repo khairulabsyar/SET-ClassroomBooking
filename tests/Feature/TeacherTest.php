@@ -1,19 +1,44 @@
 <?php
 
-namespace Tests\Feature\Teacher;
+namespace Tests\Feature;
 
 use App\Http\Requests\AddTeacherRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class TeacherTest extends TestCase
 {
-    use DatabaseTransactions;
+
+    // after auth implementation
+    /*
+     * Prepare Initialise your test with whatever like variable, seeder
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $teacher = Teacher::factory()->create([
+            'name' => 'Tester123',
+            'password' => 'password123'
+        ]);
+        Sanctum::actingAs($teacher);
+
+        $teacher->assignRole('Administrator');
+    }
+
+    //another way but cannot call static
+    // public function setUpBeforeClass():void
+    // {
+    //     parent::setUpBeforeClass();
+
+    //     //cant do like this
+    //     // $this->seed(DatabaseSeeder::class)
+    // };
+
     /**
      * Test if we can get teacher list
      */
@@ -26,39 +51,32 @@ class TeacherTest extends TestCase
         // $response->assertStatus(200)->assertJson([]);
 
         // based on number of data in database
-        $response->assertStatus(200)->assertJson([])->assertJsonCount(50);
-
-        $this->assertDatabaseHas(ClassroomType::class, ['id' => 2, 'type' => 'recorded']);
+        $response->assertStatus(200);
+        // $response->assertStatus(200)->assertJson([])->assertJsonCount(52);
     }
 
     //something wrong
-    // public function test_can_register_teacher()
-    // {
-    //     // $response = $this->postJson('api/teacher-list', [
-    //     //     'name' => "khairul absyar",
-    //     //     'password' => "helloworld"
-    //     // ]);
+    public function test_can_register_teacher()
+    {
+        // $teacher = $this->getTeacher();
 
-    //     //testing factory
-    //     $teacher = $this->getTeacher(); // check TestCase.php
+        // $teacher['name'] = 'Yau Shik Pek';
 
-    //     var_dump($teacher);
-    //     $response = $this->postJson('api/teacher', $teacher);
+        $response = $this->postJson('api/teacher', [
+            'name' => 'hello world',
+            'password' => 'password'
+        ]);
 
-    //     $response->assertOk();
+        // $response->assertOk();
 
-    //     // $this->assertDatabaseHas(Teacher::class, [
-    //     //     'name' => 'KHAIRUL ABSYAR'
-    //     // ]);
-
-    //     // testing factory
-    //     $this->assertDatabaseHas(Teacher::class, [
-    //         'name' => $teacher['name']
-    //     ]);
-    // }
+        $this->assertDatabaseHas(Teacher::class, [
+            'name' => 'hello world'
+        ]);
+    }
 
     public function test_add_teacher_validation_fail()
     {
+
         $response = $this->postJson('api/teacher', [
             'name' => 5000, //suppose string
             'password' => 'password2334455'
@@ -122,5 +140,17 @@ class TeacherTest extends TestCase
             'name' => 345678,
             'password' => ''
         ]), false);
+    }
+
+    // testing on auth route
+    public function test_auth_route()
+    {
+        $this->getJson('api/auth')->assertStatus(200);
+    }
+
+    // testing on permission
+    public function test_permission_route()
+    {
+        $this->getJson('api/permission-test')->assertStatus(200);
     }
 }
