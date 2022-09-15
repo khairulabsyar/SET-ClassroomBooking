@@ -42,4 +42,10 @@ class Teacher extends AuthUser
     {
         return strtoupper($this->name);
     }
+
+    // for relationship, naming convention should be plural of the model related to this model
+    public function classrooms()
+    {
+        return $this->hasMany(Classrooms::class, 'teachers_id');
+    }
 }

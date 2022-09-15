@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassroomsController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherFactoryController;
 use App\Http\Controllers\TeacherResourceController;
+use App\Http\Resources\TeacherResource;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -148,3 +150,40 @@ Route::get('permission-to-role', function () {
 Route::get('permission-test', function () {
     return 'Success';
 })->middleware(['permission:teacher:edit|teacher:delete']);
+
+// 14/9
+/*
+ *  Test middelware to check inside request has 'isAdmin' key
+ */
+Route::post('middleware-test', function (Request $request) {
+    return 'User no: ' . $request->has('isAdmin');
+})->middleware('is_admin'); // ->middleware(isAdminExistMiddleware::class)
+
+//exclude
+// Route::group(function () {
+//     // specific route to exclude
+//     Route::get('/')->withoutMiddleware(['is_admin']);
+
+//     Route::post('/');
+//     // all other route will use 'is_admind' middleware
+// })->middleware('is_admin');
+
+Route::get('all-teachers', function () {
+    $teachers = Teacher::all();
+    // dd($teachers); // give collection
+    return response()->json(TeacherResource::collection($teachers));
+});
+
+// Route::get('one-teacher', function () {
+//     $teacher = Teacher::first();
+//     // dd($teacher); give teacher model
+//     return response()->json(new TeacherResource($teacher));
+// });
+
+Route::get('one-teacher', function () {
+    $teacher = Teacher::first();
+    $teacher['pass_data'] = "This pass data";
+    return response()->json(new TeacherResource($teacher));
+});
+
+Route::apiResource('classroom', ClassroomsController::class)->middleware('auth:sanctum');

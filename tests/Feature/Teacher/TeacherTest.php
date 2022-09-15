@@ -21,13 +21,17 @@ class TeacherTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $teacher = Teacher::factory()->create([
             'name' => 'Tester123',
             'password' => 'password123'
         ]);
+
         Sanctum::actingAs($teacher);
 
         $teacher->assignRole('Administrator');
+
+        $teacher->givePermissionTo(['teacher:edit', 'teacher:delete']);
     }
 
     //another way but cannot call static
@@ -100,7 +104,8 @@ class TeacherTest extends TestCase
     {
         $response = $this->postJson('api/teacher', [
             'name' => 'helloworld',
-            'password' => 313123
+            'password' => 313123,
+
         ]);
 
         // validation

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddTeacherRequest;
+use App\Http\Resources\TeacherResource;
 
 class TeacherResourceController extends Controller
 {
@@ -17,7 +18,7 @@ class TeacherResourceController extends Controller
     {
         $data = Teacher::all();
 
-        return response()->json($data);
+        return response()->json(TeacherResource::collection($data));
     }
 
     /**
