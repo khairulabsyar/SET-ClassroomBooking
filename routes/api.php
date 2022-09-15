@@ -5,7 +5,9 @@ use App\Http\Controllers\ClassroomsController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherFactoryController;
 use App\Http\Controllers\TeacherResourceController;
+use App\Http\Resources\ClassroomsResource;
 use App\Http\Resources\TeacherResource;
+use App\Models\Classroom;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -187,3 +189,52 @@ Route::get('one-teacher', function () {
 });
 
 Route::apiResource('classroom', ClassroomsController::class)->middleware('auth:sanctum');
+
+Route::post('classroom/search', function (Request $request) {
+    $request->validate([
+        'teachers_id' => 'exists:teachers,id',
+        'type_name' => 'string',
+        'search_topic' => 'string|min:3',
+        'search_teacher_name' => 'string',
+    ]);
+
+    // $collection = Classroom::query()
+    //     ->when($request->teacher_id, function ($q) use ($request) {
+    //         $q->where('teachers_id', $request->teacher_id);
+    //     })
+    //     ->when($request->type_name, function ($q) use ($request) {
+    //         // usiang relation to query
+    //         $q->whereHas('classroomType', function ($x) use ($request) {
+    //             $x->where('name', $request->type_name);
+    //         });
+    //     })
+    //     ->when($request->search_topic, function ($q) use ($request) {
+    //         $q->where('name', 'like', "%$request->search_topic%");
+    //     })
+    //     ->when($request->search_teacher_name, function ($q) use ($request) {
+    //         $q->where('teacher', function ($x) use ($request) {
+    //             $x->where('name', 'like', "%$request->search_teacher_name%");
+    //         });
+    //     })
+    //     ->get();
+
+    $collection = Classroom::query()
+        ->when($request->teachers_id, function ($que) use ($request) {
+            $que->where('teachers_id', $request->teachers_id);
+        })
+        ->when($request->type_name, function ($que) use ($request) {
+            $que->whereHas('classroomType', function ($que) use ($request) {
+                $que->where('type', $request->type_name);
+            });
+        })
+        ->when($request->search_topic, function ($que) use ($request) {
+            $que->where('name', 'like', "%$request->search_topic%");
+        })
+        ->when($request->search_teacher_name, function ($que) use ($request) {
+            $que->whereHas('teacher', function ($que) use ($request) {
+                $que->where('name', 'like', "%$request->search_teacher_name%");
+            });
+        })->get();
+
+    return ClassroomsResource::collection($collection);
+});

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Classrooms;
+use App\Models\Classroom;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
 
@@ -22,6 +22,7 @@ class ClassroomsResource extends JsonResource
             'category' => $this->classroomType->name,
             'date' => $this->date,
             'time' => $this->time_start . ' to ' . $this->time_end,
+            'attachment' => optional($this->attachment)->uri
         ];
     }
 }

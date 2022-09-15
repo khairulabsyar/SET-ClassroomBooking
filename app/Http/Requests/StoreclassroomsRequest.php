@@ -28,7 +28,8 @@ class StoreclassroomsRequest extends FormRequest
             'type_id' => 'required|exists:classroom_types,id',
             'date' => 'string',
             'time_start' => 'string',
-            'time_end' => 'string'
+            'time_end' => 'string',
+            'uri' => 'string'
         ];
     }
 }

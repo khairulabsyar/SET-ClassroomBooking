@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class AttachmentFactory extends Factory
+class StudentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,7 +14,8 @@ class AttachmentFactory extends Factory
     public function definition()
     {
         return [
-            'uri' => $this->faker->url()
+            'name' => $this->faker->name(),
+            'password' => 'password123'
         ];
     }
 }

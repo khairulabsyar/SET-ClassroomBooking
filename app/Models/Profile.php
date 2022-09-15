@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attachment extends Model
+class Profile extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'uri'
+        'fullname',
+        'dob',
     ];
 
-    public function classroom()
+    public function profileable()
     {
-        return $this->belongsTo(Classroom::class);
+        return $this->morphTo();
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreclassroomsRequest;
 use App\Http\Requests\UpdateclassroomsRequest;
 use App\Http\Resources\ClassroomsResource;
-use App\Models\Classrooms;
+use App\Models\Classroom;
 use Illuminate\Support\Facades\Auth;
 
 class ClassroomsController extends Controller
@@ -17,7 +17,7 @@ class ClassroomsController extends Controller
      */
     public function index()
     {
-        $myClass = Auth::user()->classrooms; // based on teacher model, 
+        $myClass = Auth::user()->classroom; // based on teacher model, 
 
         return ClassroomsResource::collection($myClass);
     }
@@ -42,7 +42,13 @@ class ClassroomsController extends Controller
     {
         // $class = Classrooms::create($request->all());
 
-        $class = Auth::user()->classrooms()->create($request->all());
+        $class = Auth::user()->classroom()->create($request->except('uri'));
+
+        // check uri exist
+        if ($request->has('uri')) {
+            // create attachment using class instance
+            $class->attachment()->create($request->only('uri'));
+        }
 
         return new ClassroomsResource($class);
     }
@@ -50,10 +56,10 @@ class ClassroomsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Classrooms  $classrooms
+     * @param  \App\Models\Classroom  $classrooms
      * @return \Illuminate\Http\Response
      */
-    public function show(Classrooms $classroom)
+    public function show(Classroom $classroom)
     {
         // return $classroom;
         if ($classroom->teachers_id == Auth::id()) {
@@ -66,10 +72,10 @@ class ClassroomsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Classrooms  $classrooms
+     * @param  \App\Models\Classroom  $classrooms
      * @return \Illuminate\Http\Response
      */
-    public function edit(Classrooms $classrooms)
+    public function edit(Classroom $classrooms)
     {
         //
     }
@@ -78,14 +84,25 @@ class ClassroomsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateclassroomsRequest  $request
-     * @param  \App\Models\Classrooms  $classrooms
+     * @param  \App\Models\Classroom  $classrooms
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateclassroomsRequest $request, Classrooms $classroom)
+    public function update(UpdateclassroomsRequest $request, Classroom $classroom)
     {
         if ($classroom->teachers_id == Auth::id()) {
 
             $classroom->update($request->all());
+
+            // check payload has uri
+            if (request()->has('uri')) {
+                // update or create if not exist
+                $classroom->attachment()->updateOrCreate(
+                    ['classroom_id' => $classroom->id],
+                    $request->only('uri')
+                );
+                // or like this
+                // $classroom->attachment()->update($request->only('uri'));
+            }
 
             return new ClassroomsResource($classroom);
         }
@@ -96,10 +113,10 @@ class ClassroomsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Classrooms  $classrooms
+     * @param  \App\Models\Classroom  $classrooms
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Classrooms $classroom)
+    public function destroy(Classroom $classroom)
     {
         if ($classroom->teachers_id == Auth::id()) {
 

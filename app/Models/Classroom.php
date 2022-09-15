@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Classrooms extends Model
+class Classroom extends Model
 {
     use HasFactory;
 
@@ -31,5 +31,10 @@ class Classrooms extends Model
     public function classroomType()
     {
         return $this->belongsTo(ClassroomType::class, 'type_id');
+    }
+
+    public function attachment()
+    {
+        return $this->hasOne(Attachment::class);
     }
 }

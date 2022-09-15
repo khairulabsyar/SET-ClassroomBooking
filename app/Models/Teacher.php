@@ -44,8 +44,13 @@ class Teacher extends AuthUser
     }
 
     // for relationship, naming convention should be plural of the model related to this model
-    public function classrooms()
+    public function classroom()
     {
-        return $this->hasMany(Classrooms::class, 'teachers_id');
+        return $this->hasMany(Classroom::class, 'teachers_id');
+    }
+
+    public function profile()
+    {
+        return $this->morphOne(Profile::class, 'profileable');
     }
 }
