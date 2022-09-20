@@ -158,4 +158,9 @@ class TeacherTest extends TestCase
     {
         $this->getJson('api/permission-test')->assertStatus(200);
     }
+
+    public function test_dispatch_create_teacher_job()
+    {
+        $this->getJson('api/execute-job')->assertStatus(200);
+    }
 }

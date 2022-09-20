@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddTeacherRequest;
+use Illuminate\Routing\Controller;
 
 class TeacherController extends Controller
 {

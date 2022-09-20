@@ -7,6 +7,7 @@ use App\Http\Controllers\TeacherFactoryController;
 use App\Http\Controllers\TeacherResourceController;
 use App\Http\Resources\ClassroomsResource;
 use App\Http\Resources\TeacherResource;
+use App\Jobs\CreateTeacherJob;
 use App\Models\Classroom;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
@@ -43,72 +44,72 @@ Route::post('classroom-type', function () {
     return ClassroomType::all();
 });
 
-// Route::get('teacher-list', function () {
-//     $data = Teacher::all();
-//     return response()->json($data);
-// });
-// Route::get('teacher-list', [TeacherController::class, 'index']);
-//or old systax with configured RouteServiceProvider.php
-// Route::get('teacher-list', 'App\Http\Controllers\TeacherController@index');
+Route::get('teacher-list', function () {
+    $data = Teacher::all();
+    return response()->json($data);
+});
+Route::get('teacher-list', [TeacherController::class, 'index']);
+// or old systax with configured RouteServiceProvider.php
+Route::get('teacher-list', 'App\Http\Controllers\TeacherController@index');
 
-// Route::post('teacher-list', function (Request $request) {
-//     //either do it here or in Teacher.php Mutator function
-//     // $request['password'] = Hash::make($request->secret);
-//     Teacher::create($request->all());
-//     $data = Teacher::get();
-//     return  response()->json($data);
-// });
-// Route::post('teacher-list', [TeacherController::class, 'store']);
+Route::post('teacher-list', function (Request $request) {
+    //either do it here or in Teacher.php Mutator function
+    // $request['password'] = Hash::make($request->secret);
+    Teacher::create($request->all());
+    $data = Teacher::get();
+    return  response()->json($data);
+});
+Route::post('teacher-list', [TeacherController::class, 'store']);
 
-// Route::get('teacher/{id}', function ($id) {
-//     return Teacher::findOrFail($id);
-// });
-// Route::get('teacher/{id}', [TeacherController::class, 'show']);
+Route::get('teacher/{id}', function ($id) {
+    return Teacher::findOrFail($id);
+});
+Route::get('teacher/{id}', [TeacherController::class, 'show']);
 
-// Route::put('teacher/{id}', function ($id, Request $request) {
-//     // select the specific teacher based on id
-//     $teacher = Teacher::findOrFail($id);
-//     // update the info given in payload to that teacher
-//     $teacher->update($request->all());
-//     // return updated information
-//     return $teacher;
-//     // // basically after sending to DB it will return back to here, extra query
-//     // return $teacher->refresh();
-//     // // shorter version for refresh
-//     // return tap($teacher)->update($request->all());
-// });
-// Route::put('teacher/{id}', [TeacherController::class, 'update']);
+Route::put('teacher/{id}', function ($id, Request $request) {
+    // select the specific teacher based on id
+    $teacher = Teacher::findOrFail($id);
+    // update the info given in payload to that teacher
+    $teacher->update($request->all());
+    // return updated information
+    return $teacher;
+    // // basically after sending to DB it will return back to here, extra query
+    // return $teacher->refresh();
+    // // shorter version for refresh
+    // return tap($teacher)->update($request->all());
+});
+Route::put('teacher/{id}', [TeacherController::class, 'update']);
 
-// Route::delete('teacher/{id}', function ($id) {
-//     Teacher::findOrFail($id)->delete();
-//     return  response()->json("Delete Teacher: " . $id, 204);
-// });
-// Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
+Route::delete('teacher/{id}', function ($id) {
+    Teacher::findOrFail($id)->delete();
+    return  response()->json("Delete Teacher: " . $id, 204);
+});
+Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
 
 // can be summarise into this line of code and make sure the name is generalise
-// Route::apiResource('teacher', TeacherResourceController::class); // remove this for 13/9
-// Route::get('teacher-list', [TeacherController::class, 'index']);
-// Route::post('teacher-list', [TeacherController::class, 'store']);
-// Route::get('teacher/{id}', [TeacherController::class, 'show']);
-// Route::put('teacher/{id}', [TeacherController::class, 'update']);
-// Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
+Route::apiResource('teacher', TeacherResourceController::class); // remove this for 13/9
+Route::get('teacher-list', [TeacherController::class, 'index']);
+Route::post('teacher-list', [TeacherController::class, 'store']);
+Route::get('teacher/{id}', [TeacherController::class, 'show']);
+Route::put('teacher/{id}', [TeacherController::class, 'update']);
+Route::delete('teacher/{id}', [TeacherController::class, 'delete']);
 
 // exclude some function (blacklist)
-// Route::apiResource('teacher', TeacherResourceController::class)->except(['destroy']);
+Route::apiResource('teacher', TeacherResourceController::class)->except(['destroy']);
 
 // execute specific function (whitelist)
-// Route::apiResource('teacher', TeacherResourceController::class)->only(['destroy']);
+Route::apiResource('teacher', TeacherResourceController::class)->only(['destroy']);
 
 // for php artisan route:list
-// Route::apiResource('teacher', TeacherResourceController::class)->names('helloWorld');
+Route::apiResource('teacher', TeacherResourceController::class)->names('helloWorld');
 
-// Route::get('factory-teacher', function () {
-//     // generate only
-//     // $generated = Teacher::factory()->make();
-//     // generate and save to DB
-//     $generated = Teacher::factory()->upTheName()->create();
-//     return $generated;
-// });
+Route::get('factory-teacher', function () {
+    // generate only
+    // $generated = Teacher::factory()->make();
+    // generate and save to DB
+    $generated = Teacher::factory()->upTheName()->create();
+    return $generated;
+});
 Route::get('factory-teacher', [TeacherFactoryController::class]);
 
 // 13/9
@@ -237,4 +238,14 @@ Route::post('classroom/search', function (Request $request) {
         })->get();
 
     return ClassroomsResource::collection($collection);
+});
+
+// 19/9
+Route::get('execute-job', function () {
+    CreateTeacherJob::dispatch("Ironman");
+
+    // can add delay, seems like tak function
+    // CreateTeacherJob::dispatch("Ironman")->delay(now()->addMinutes(0.5));
+
+    return "Success";
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreAttachmentRequest;
 use App\Http\Requests\UpdateAttachmentRequest;
 use App\Models\Attachment;
+use Illuminate\Routing\Controller;
 
 class AttachmentController extends Controller
 {

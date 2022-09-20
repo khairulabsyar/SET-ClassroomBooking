@@ -6,6 +6,7 @@ use App\Http\Requests\StoreclassroomsRequest;
 use App\Http\Requests\UpdateclassroomsRequest;
 use App\Http\Resources\ClassroomsResource;
 use App\Models\Classroom;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ClassroomsController extends Controller

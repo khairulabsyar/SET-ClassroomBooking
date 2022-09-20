@@ -6,6 +6,7 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddTeacherRequest;
 use App\Http\Resources\TeacherResource;
+use Illuminate\Routing\Controller;
 
 class TeacherResourceController extends Controller
 {
