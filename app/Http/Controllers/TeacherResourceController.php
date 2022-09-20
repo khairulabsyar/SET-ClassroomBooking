@@ -6,7 +6,10 @@ use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddTeacherRequest;
 use App\Http\Resources\TeacherResource;
+use App\Notifications\SuccessRegisterNotification;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class TeacherResourceController extends Controller
 {
@@ -15,9 +18,12 @@ class TeacherResourceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $data = Teacher::all();
+
+        // for custom logging
+        // Log::channel('mylog')->info($request->ip() . 'retrieve  list of teachers');
 
         return response()->json(TeacherResource::collection($data));
     }
@@ -45,13 +51,16 @@ class TeacherResourceController extends Controller
         // return  response()->json($data);
 
         // after authorization
-
         $teacher = Teacher::create($request->all());
 
         // assign role to Admin
         // $teacher->assignRole('Administrator');
         $teacher->assignRole('Support');
         $teacher->assignRole('Developer');
+
+        // passing manual email since we dont have email column
+        Notification::route('mail', 'khairul@invokeisdata.com')
+            ->notify(new SuccessRegisterNotification($teacher));
 
         return response()->json($teacher);
     }
@@ -96,14 +105,12 @@ class TeacherResourceController extends Controller
     {
         $data = $request->validate([
             'name' => 'string|required'
-        ], [
-            'name.required' => 'Name diperlukan'
         ]);
 
         $teacher = Teacher::findOrFail($id);
 
         // update for authorization
-        $this->authorize('view', $teacher);
+        // $this->authorize('view', $teacher);
 
         // $teacher->update($request->all());
 
@@ -111,6 +118,7 @@ class TeacherResourceController extends Controller
         // or
         // return tap($teacher)->update($request->all());
         return tap($teacher)->update($data);
+        // return tap($teacher)->update();
     }
 
     /**

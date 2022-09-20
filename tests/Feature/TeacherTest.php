@@ -7,13 +7,16 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\ClassroomType;
 use App\Models\Teacher;
+use App\Notifications\SuccessRegisterNotification;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class TeacherTest extends TestCase
 {
-
+    use WithFaker;
     // after auth implementation
     /*
      * Prepare Initialise your test with whatever like variable, seeder
@@ -66,16 +69,40 @@ class TeacherTest extends TestCase
 
         // $teacher['name'] = 'Yau Shik Pek';
 
+        Notification::fake();
         $response = $this->postJson('api/teacher', [
             'name' => 'hello world',
             'password' => 'password'
         ]);
 
-        // $response->assertOk();
+        $response->assertOk();
 
-        $this->assertDatabaseHas(Teacher::class, [
-            'name' => 'hello world'
-        ]);
+        // assert using model, user is registed, we have his email
+        // Notification::assertSentTo($teacher, SuccessRegisterNotification::class, 1);
+
+        // if send to random/ unregistered user
+        Notification::assertSentTo(new AnonymousNotifiable, SuccessRegisterNotification::class);
+        // $this->assertDatabaseHas(Teacher::class, [
+        //     'name' => 'hello world'
+        // ]);
+    }
+
+    public function test_register_new_teacher()
+    {
+        // make sure off sanctum
+        Notification::fake();
+
+        $name = $this->faker->name;
+
+        $this->postJson('api/teacher', [
+            'name' => $name,
+            'password' => 'helloworld123'
+        ])
+            ->assertOk();
+
+        $this->assertDatabaseHas(Teacher::class, ['name' => $name]);
+
+        Notification::assertSentTo(new AnonymousNotifiable, SuccessRegisterNotification::class, 1);
     }
 
     public function test_add_teacher_validation_fail()

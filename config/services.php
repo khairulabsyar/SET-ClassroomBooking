@@ -30,4 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'mailtrap' => [
+        'account_id' => env("MAILTRAP_ID", 00000), // providing null to api/controller will be disaster
+        'token' => env("MAILTRAP_API")
+    ]
 ];

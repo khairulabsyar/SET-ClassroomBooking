@@ -64,7 +64,6 @@ class ClassroomsController extends Controller
     {
         // return $classroom;
         if ($classroom->teachers_id == Auth::id()) {
-
             return new ClassroomsResource($classroom);
         }
         abort(403);
